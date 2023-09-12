@@ -6,8 +6,6 @@ export default function useJsonFetch<T>(url: string, opts = {}) {
   const [error, setError] = useState('');
 
   async function fetchData() {
-    await new Promise(r => setTimeout(r, 200));
-    
     try {
       setError('');
       setLoading(true); 
@@ -34,5 +32,5 @@ export default function useJsonFetch<T>(url: string, opts = {}) {
     fetchData();
   }, []);
 
-  return [ data, loading, error, fetchData ] as const;
+  return [ data, loading, error, setError ] as const;
 }

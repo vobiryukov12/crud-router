@@ -1,8 +1,9 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { IPosts } from '../../models/models';
 import { Loader } from '../../components/Loader';
 import { ErrorMessage } from '../../components/ErrorMessage';
+import { Saving } from '../../components/Saving';
 
 export function EditPost() {
   const params = useParams();
@@ -11,6 +12,8 @@ export function EditPost() {
   const [value, setValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
 
   async function fetchData() {
     try {
@@ -46,19 +49,37 @@ export function EditPost() {
   };
 
   async function savePost() {
-    await fetch(`http://localhost:3000/posts/${id}`, {
-      method: 'PATCH', 
-      body: JSON.stringify({
-        content: value
-      }),
-      headers: {
-      'Content-type': 'application/json; charset=UTF-8',
-      },
-    });
+    try {
+      setError('');
+      setSaving(true);
+
+      const response = await fetch(`http://localhost:3000/posts/${id}`, {
+        method: 'PATCH', 
+        body: JSON.stringify({
+          content: value
+        }),
+        headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+        },
+      });
+
+      if (!response.ok) {
+        setSaving(false);
+        setError(`Ошибка! статус: ${response.status}`);
+        return;
+      } else {
+        navigate(`/posts/${id}`);
+      }
+
+    } catch (e) {
+      setSaving(false)
+      const error = new Error(" Ого, ошибка! o_O");
+      setError(error.message);
+    }
   }
   
   return (
-    data !== null 
+    data !== null
     ?
     <div className="post">
       <div className="post__header">
@@ -73,15 +94,17 @@ export function EditPost() {
       </div>
 
       <div className="post__footer">
-        <Link to={`/posts/${id}`} className="post__button post__edit" onClick={savePost}>Сохранить</Link>
+        <button className="post__button post__edit" onClick={savePost}>Сохранить</button>
       </div>
+
+      { saving && <Saving /> }
+      { error && <ErrorMessage error={error} /> }
 
       <Link to={`/posts/${id}`} className="post__close">X</Link>
     </div>
     :
     <>
       { loading && <Loader /> }
-      { error && <ErrorMessage error={error} /> }
     </>
   );
 }

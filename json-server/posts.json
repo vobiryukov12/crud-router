@@ -1,3 +1,19 @@
 {
-  "posts": []
+  "posts": [
+    {
+      "id": 1,
+      "content": "1 пост",
+      "created": "Vlad Biryukov"
+    },
+    {
+      "id": 2,
+      "content": "2 пост",
+      "created": "Vlad Biryukov"
+    },
+    {
+      "id": 3,
+      "content": "3 пост",
+      "created": "Vlad Biryukov"
+    }
+  ]
 }
